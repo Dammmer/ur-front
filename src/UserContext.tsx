@@ -123,7 +123,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     };
 
     initializeUser();
-  }, []);
+  }, [token]);
 
   const login = async (token: string) => {
     // Сохраняем токен и устанавливаем заголовок авторизации
@@ -142,7 +142,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       setLoading(true);
       
       try {
-        // @ts-ignore: Ignore error about process not being defined
         const response = await axios.get<User>(`${apiBaseUrl}/api/users/${decoded.id}`);
         
         // Устанавливаем полный профиль пользователя

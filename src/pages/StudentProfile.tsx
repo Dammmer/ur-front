@@ -55,7 +55,8 @@ export const StudentProfile: React.FC = () => {
   // Удалена неиспользуемая переменная error, поскольку мы больше не делаем API-запросы
 
   // Преобразуем данные из UserContext в формат профиля
-  const profile = user ? {
+  const hasProfile = Boolean(user);
+  const profile = (user ? {
     id: user.id,
     firstName: user.firstName || '',
     lastName: user.lastName || '',
@@ -75,11 +76,22 @@ export const StudentProfile: React.FC = () => {
     birthDate: user.birthDate,
     status: user.status,
     cardColor: user.cardColor,
-    active: user.active
-  } as UserProfile : null;
-
-  if (userLoading) return <Box sx={{ textAlign: 'center', mt: 8 }}><CircularProgress /></Box>;
-  if (!profile || !user) return <MuiAlert severity="warning">{t('studentProfile.missingProfile')}</MuiAlert>;
+    active: user.active,
+  } : {
+    id: '',
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    country: '',
+    language: '',
+    gender: '',
+    telegram: '',
+    whatsapp: '',
+    coursesCompleted: 0,
+    createdAt: new Date().toISOString(),
+    lastLogin: new Date().toISOString(),
+  }) as UserProfile;
 
   const achievements: { name: string }[] = [];
   if (profile.coursesCompleted >= 1) achievements.push({ name: t('studentProfile.achievementFirstSteps') });
@@ -112,6 +124,9 @@ export const StudentProfile: React.FC = () => {
     { name: t('studentProfile.eventRegistrationDate', { date: dayjs(profile.createdAt).format('DD.MM.YYYY') }) },
     { name: t('studentProfile.eventLastLogin', { date: dayjs(profile.lastLogin).format('DD.MM.YYYY') }) },
   ];
+
+  if (userLoading) return <Box sx={{ textAlign: 'center', mt: 8 }}><CircularProgress /></Box>;
+  if (!hasProfile || !user) return <MuiAlert severity="warning">{t('studentProfile.missingProfile')}</MuiAlert>;
 
 
 

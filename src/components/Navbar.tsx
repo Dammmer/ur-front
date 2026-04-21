@@ -45,7 +45,7 @@ export const Navbar: React.FC = () => {
       icon: <DollarCircleOutlined />,
       label: <a href="/pricing">{t('navbar.pricing')}</a>,
     },
-  ], [t, i18n.language]);
+  ], [t]);
 
   return (
     <nav className={styles.navbar}>

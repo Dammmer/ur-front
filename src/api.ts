@@ -1,5 +1,5 @@
 // Используем переменную окружения для production, fallback на localhost для разработки
-export const apiBaseUrl = import.meta.env.REACT_APP_API_URL || 'https://ur-ba.vercel.app';
+export const apiBaseUrl = import.meta.env.VITE_API_URL || import.meta.env.REACT_APP_API_URL || 'https://ur-ba.vercel.app';
 
 // API helpers for Community posts
 export type PostCategory = 'question' | 'discussion' | 'news' | 'history';
@@ -72,8 +72,9 @@ export const sendVerificationEmail = async (email: string) => {
 
 // Универсальный API-клиент для работы с сервером Uyghur Connect
 export const getUsers = async (token?: string) => {
+  const authToken = token || localStorage.getItem('token') || undefined;
   const res = await fetch(`${apiBaseUrl}/api/users`, {
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    headers: authToken ? { Authorization: `Bearer ${authToken}` } : {},
     cache: 'no-store',
   });
   if (res.status === 304) return [];
@@ -82,8 +83,9 @@ export const getUsers = async (token?: string) => {
 };
 
 export const getUserById = async (id: string, token?: string) => {
+  const authToken = token || localStorage.getItem('token') || undefined;
   const res = await fetch(`${apiBaseUrl}/api/users/${id}`, {
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    headers: authToken ? { Authorization: `Bearer ${authToken}` } : {},
     cache: 'no-store',
   });
   if (!res.ok) throw new Error('Ошибка загрузки профиля пользователя');
@@ -91,8 +93,9 @@ export const getUserById = async (id: string, token?: string) => {
 };
 
 export const fetchUserById = async (id: string, token?: string) => {
+  const authToken = token || localStorage.getItem('token') || undefined;
   const res = await fetch(`${apiBaseUrl}/api/users/${id}`, {
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    headers: authToken ? { Authorization: `Bearer ${authToken}` } : {},
     cache: 'no-store',
   });
   if (!res.ok) throw new Error('Ошибка загрузки профиля');
@@ -100,8 +103,9 @@ export const fetchUserById = async (id: string, token?: string) => {
 }
 
 export const getUserProfile = async (id: string, token?: string) => {
+  const authToken = token || localStorage.getItem('token') || undefined;
   const res = await fetch(`${apiBaseUrl}/api/users/${id}`, {
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    headers: authToken ? { Authorization: `Bearer ${authToken}` } : {},
     cache: 'no-store',
   });
   if (!res.ok) throw new Error('Ошибка загрузки профиля');
@@ -110,11 +114,12 @@ export const getUserProfile = async (id: string, token?: string) => {
 };
 
 export const updateUser = async (id: string, user: any, token?: string) => {
+  const authToken = token || localStorage.getItem('token') || undefined;
   const res = await fetch(`${apiBaseUrl}/api/users/${id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
     },
     body: JSON.stringify(user),
   });
@@ -123,13 +128,11 @@ export const updateUser = async (id: string, user: any, token?: string) => {
 }
 
 export const checkUserDuplicate = async (username: string, email: string) => {
-  console.log(`checking duplicate: ${username} ${email}`);
   const res = await fetch(`${apiBaseUrl}/api/users/check-duplicate`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username, email }),
   });
-  console.log(`connected to server: ${username} ${email}`);
   return res;
 };
 
@@ -153,22 +156,25 @@ export const createUser = async (userData: {
   email: string;
   [key: string]: any; // остальные опциональные поля
 }) => {
+  const token = localStorage.getItem('token') || undefined;
   const res = await fetch(`${apiBaseUrl}/api/users`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
     body: JSON.stringify(userData),
   });
-  console.log(`created user: ${userData.username}`);
   return res;
 };
 
 export const updateUserNotes = async (userId: string, notes: string, token?: string) => {
-  console.log(`updating user notes: ${userId}`);
+  const authToken = token || localStorage.getItem('token') || undefined;
   const res = await fetch(`${apiBaseUrl}/api/users/${userId}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
     },
     body: JSON.stringify({ notes }),
   });
@@ -193,7 +199,10 @@ export const getCourse = async (id: string) => {
 
 // Получить все уроки для курса по его ID
 export const getLessons = async (courseId: string) => {
-  const res = await fetch(`${apiBaseUrl}/api/lessons/course/${courseId}`);
+  const token = localStorage.getItem('token') || undefined;
+  const res = await fetch(`${apiBaseUrl}/api/lessons/course/${courseId}`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
   if (!res.ok) {
     console.error(`[API] Error loading lessons for course: ${res.status}`);
     throw new Error('Ошибка загрузки уроков курса');
@@ -204,7 +213,10 @@ export const getLessons = async (courseId: string) => {
 
 // Получить конкретный урок и преобразовать к формату фронтенда
 export const getLesson = async (id: string) => {
-  const res = await fetch(`${apiBaseUrl}/api/lessons/${id}`);
+  const token = localStorage.getItem('token') || undefined;
+  const res = await fetch(`${apiBaseUrl}/api/lessons/${id}`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
   if (!res.ok) {
     throw new Error('Ошибка загрузки урока');
   }
@@ -217,15 +229,15 @@ export const getLesson = async (id: string) => {
     content2: data.description || '',
   };
 
-  console.log('[API] Lesson data received:', data);
-  console.log('[API] Transformed for frontend:', result);
-
   return result;
 };
 
 // API для работы с уроками
 export const getLessonsByCourse = async (courseId: string) => {
-  const res = await fetch(`${apiBaseUrl}/api/lessons/course/${courseId}`);
+  const token = localStorage.getItem('token') || undefined;
+  const res = await fetch(`${apiBaseUrl}/api/lessons/course/${courseId}`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
   if (!res.ok) throw new Error('Ошибка загрузки уроков');
   return res.json();
 };
@@ -267,9 +279,6 @@ export const createLesson = async (lesson: {
     course: lesson.course, // ID курса (MongoDB ID формата)
     order: lesson.order || 0,
   };
-
-  console.log('[API] Creating lesson with data:', lessonData);
-  console.log(`[API] Course ID being sent: ${lessonData.course} (should be a valid MongoDB ID)`);
 
   const res = await fetch(`${apiBaseUrl}/api/lessons`, {
     method: 'POST',
@@ -320,8 +329,6 @@ export const updateLesson = async (id: string, lesson: {
     course: lesson.course,
     order: lesson.order || 0,
   };
-
-  console.log('[API] Updating lesson with data:', lessonData);
 
   const res = await fetch(`${apiBaseUrl}/api/lessons/${id}`, {
     method: 'PUT',
@@ -386,12 +393,11 @@ export const deleteCourse = async (id: string, token?: string) => {
   try { data = JSON.parse(text); } catch { data = text; }
   if (!res.ok) {
     const error = new Error((typeof data === 'string' ? data : (data?.error || 'Ошибка удаления курса')));
-    // @ts-ignore
-    error.status = res.status;
-    // @ts-ignore
-    error.statusText = res.statusText;
-    // @ts-ignore
-    error.body = data;
+    Object.assign(error, {
+      status: res.status,
+      statusText: res.statusText,
+      body: data,
+    });
     throw error;
   }
   return data;

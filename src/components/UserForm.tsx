@@ -171,7 +171,7 @@ export const UserForm: React.FC<UserFormProps> = (props) => {
       if (onFinish) {
         onFinish(values);
       }
-    } catch (error) {
+    } catch {
       setLoading(false);
       setSnackbar({ open: true, message: t('userForm.errorCreatingUser'), severity: 'error' });
     }

@@ -55,7 +55,7 @@ export const Learn: React.FC = () => {
         setError(e.message || t('learnPage.loadingError'));
         setLoading(false);
       });
-  }, []);
+  }, [t]);
 
   const [deleteModal, setDeleteModal] = useState<Course | null>(null);
 
