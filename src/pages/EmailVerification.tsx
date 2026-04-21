@@ -35,7 +35,7 @@ const EmailVerification: React.FC = () => {
           navigate('/login');
         }
       }
-    } catch (error) {
+    } catch {
       message.error(t('emailVerification.errorMessage'));
     } finally {
       setLoading(false);
@@ -47,7 +47,7 @@ const EmailVerification: React.FC = () => {
     try {
       await sendVerificationEmail(email);
       message.success(t('emailVerification.resendSuccess'));
-    } catch (error) {
+    } catch {
       message.error(t('emailVerification.resendError'));
     } finally {
       setResending(false);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { useTranslation } from 'react-i18next';
@@ -33,9 +33,7 @@ import { type ContentBlock, ContentBlockType, TabPanel, AddBlockDialog, ContentB
 import styles from './styles/LessonEditor.module.css';
 
 // Main LessonEditor component
-interface MainLessonEditorProps { }
-
-export const MainLessonEditor: React.FC<MainLessonEditorProps> = () => {
+export const MainLessonEditor: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
@@ -44,7 +42,7 @@ export const MainLessonEditor: React.FC<MainLessonEditorProps> = () => {
   const [tabValue, setTabValue] = useState(0);
 
   // Определяем, создаем ли мы новый урок
-  const queryParams = new URLSearchParams(location.search);
+  const queryParams = useMemo(() => new URLSearchParams(location.search), [location.search]);
   const isNew = queryParams.get('new') === 'true';
 
   // State for lesson data
@@ -64,7 +62,7 @@ export const MainLessonEditor: React.FC<MainLessonEditorProps> = () => {
 
   // Helper function to get YouTube ID
   const getYouTubeId = (url: string): string | null => {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
     const match = url.match(regExp);
     return (match && match[2].length === 11) ? match[2] : null;
   };
@@ -171,7 +169,7 @@ export const MainLessonEditor: React.FC<MainLessonEditorProps> = () => {
         })
         .finally(() => setLoading(false));
     }
-  }, [lessonId, t]);
+  }, [courseId, isNew, lessonId, queryParams, t]);
 
   // Handle tab change
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
@@ -314,8 +312,6 @@ export const MainLessonEditor: React.FC<MainLessonEditorProps> = () => {
         setSaving(false);
         return;
       }
-
-      console.log('[MainLessonEditor] Using token for API call:', token.substring(0, 15) + '...');
 
       if (lessonId && !isNew) {
         console.log(`[MainLessonEditor] Updating lesson with ID: ${lessonId}`);

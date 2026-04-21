@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { List, Typography, Button, Modal, Form, Input, message, Spin, Avatar } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import type { Post, PostCategory } from '../api';
@@ -24,7 +24,7 @@ export const PostList: React.FC<PostListProps> = ({ category }) => {
     return user.role === 'teacher' || user.role === 'admin';
   };
 
-  const loadPosts = async () => {
+  const loadPosts = useCallback(async () => {
     try {
       setLoading(true);
       const data = await getPosts(category);
@@ -34,11 +34,11 @@ export const PostList: React.FC<PostListProps> = ({ category }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [category]);
 
   useEffect(() => {
     loadPosts();
-  }, [category]);
+  }, [loadPosts]);
 
   const handleCreate = async (values: { title: string; content: string }) => {
     if (!token) return;

@@ -66,7 +66,7 @@ export interface Lesson {
 
 // Utility function to extract YouTube video ID from URL
 const getYouTubeId = (url: string): string | null => {
-  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
   const match = url.match(regExp);
   return (match && match[2].length === 11) ? match[2] : null;
 };
@@ -163,6 +163,7 @@ export const ContentBlockRenderer: React.FC<ContentBlockRendererProps> = ({ bloc
           </Box>
         );
       case ContentBlockType.VIDEO:
+      {
         const videoId = getYouTubeId(block.url || '');
         return (
           <Box>
@@ -180,6 +181,7 @@ export const ContentBlockRenderer: React.FC<ContentBlockRendererProps> = ({ bloc
             {block.caption && <Typography variant="caption">{block.caption}</Typography>}
           </Box>
         );
+      }
       case ContentBlockType.LINK:
         return (
           <Box>

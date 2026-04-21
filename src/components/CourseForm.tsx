@@ -96,7 +96,7 @@ export const CourseForm: React.FC<CourseFormProps> = ({ initialValues, mode = 'c
         const data = await res.json?.() || res;
         message.error(data.error || t('courseForm.saveError'));
       }
-    } catch (e) {
+    } catch {
       message.error(t('courseForm.networkError'));
     } finally {
       setLoading(false);

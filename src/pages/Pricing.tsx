@@ -11,7 +11,7 @@ export const Pricing: React.FC = () => {
 
   const handleWhatsAppRedirect = (planName: string) => {
     const planTitle = t(`pricing.plans.${planName}.title`);
-    let message = t('pricing.whatsappMessage', { plan: planTitle });
+    const message = t('pricing.whatsappMessage', { plan: planTitle });
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
     window.open(whatsappUrl, '_blank', 'noopener,noreferrer');

@@ -1,54 +1,174 @@
-# React + TypeScript + Vite
+# Uyghur Connect — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Веб-приложение для изучения уйгурского языка с системой курсов, уроков, сообщества и событий.
 
-Currently, two official plugins are available:
+## Технологический стек
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+| Категория | Технологии |
+|-----------|------------|
+| **Фреймворк** | React 18.2.0 |
+| **Язык** | TypeScript 5.8 |
+| **Сборщик** | Vite 6.3.5 |
+| **UI-библиотеки** | Ant Design 5.25.3, Material UI (@mui) 7.1.2 |
+| **Маршрутизация** | React Router DOM 6.30.1 |
+| **Состояние** | React Context API (UserContext) |
+| **HTTP-клиент** | Axios 1.9.0 |
+| **Формы** | React Hook Form 7.59.0 |
+| **i18n** | i18next 25.2.1, react-i18next 15.5.2 |
+| **Редакторы** | TinyMCE 6.1.0, React Quill 2.0.0 |
+| **Drag & Drop** | React Beautiful DND 13.1.1 |
+| **Утилиты** | Moment.js, Day.js, UUID, JWT Decode |
 
-## Expanding the ESLint configuration
+## Архитектура
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Приложение построено на принципах **компонентной архитектуры** с использованием паттернов:
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+- **Context API** — глобальное управление состоянием пользователя (аутентификация, профиль)
+- **Protected Routes** — защищённые маршруты с разграничением доступа по ролям
+- **API-слой** — централизованные функции для коммуникации с бэкендом
+
+### Структура проекта
+
+```
+ur-front/src/
+├── api.ts                 # API-клиент (все запросы к бэкенду)
+├── App.tsx                # Главный компонент с роутингом
+├── constants.ts          # Константы (страны, языки, роли, уровни)
+├── i18n.ts               # Конфигурация интернационализации
+├── main.tsx              # Точка входа
+├── UserContext.tsx       # Контекст пользователя (auth state)
+├── components/           # Переиспользуемые компоненты
+│   ├── Navbar.tsx        # Навигационная панель
+│   ├── ProtectedRoute.tsx # Защищённые маршруты
+│   ├── CourseForm.tsx    # Форма создания/редактирования курса
+│   ├── LessonEditor.tsx  # Редактор уроков
+│   ├── MainLessonEditor.tsx # Главный редактор уроков
+│   ├── UserForm.tsx      # Форма регистрации/редактирования профиля
+│   ├── PostList.tsx      # Список постов сообщества
+│   ├── PostPage.tsx      # Просмотр поста с комментариями
+│   └── ...
+├── pages/                # Страницы приложения
+│   ├── Home.tsx          # Главная страница
+│   ├── Learn.tsx         # Каталог курсов
+│   ├── Course.tsx        # Страница курса с уроками
+│   ├── Community.tsx     # Сообщество (форум)
+│   ├── Events.tsx        # События
+│   ├── StudentProfile.tsx # Профиль студента
+│   ├── AdminPanel.tsx    # Админ-панель
+│   ├── Login.tsx         # Вход
+│   ├── Register.tsx      # Регистрация
+│   ├── AboutUs.tsx       # О нас
+│   ├── Pricing.tsx       # Тарифы
+│   └── ...
+└── public/locales/        # Файлы переводов
+    ├── en/translations.json
+    ├── ru/translations.json
+    ├── fr/translations.json
+    └── sv/translations.json
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Функционал
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Аутентификация и авторизация
+- Регистрация новых пользователей
+- Вход по логину и паролю
+- JWT-токены с автоматическим обновлением
+- Верификация email
+- Разграничение ролей: **student**, **teacher**, **admin**
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+### Обучение (Learn)
+- Каталог курсов с фильтрацией по уровням (beginner, intermediate, advanced, speaking)
+- Просмотр уроков с динамическими блоками контента (текст, изображения, видео, код)
+- Редактор уроков (для teacher/admin)
+- Отслеживание прогресса (завершённые уроки)
+
+### Сообщество (Community)
+- Публикация постов в категориях: question, discussion, news, history
+- Комментарии к постам
+- Профили пользователей
+
+### События (Events)
+- Просмотр событий
+- Создание/редактирование событий (для teacher/admin)
+
+### Админ-панель
+- Управление курсами
+- Управление пользователями
+- Управление событиями
+
+### Интернационализация
+- Поддержка 4 языков: английский, русский, французский, шведский
+- Автоматическое определение языка пользователя
+
+## API-взаимодействие
+
+Базовый URL API определяется через переменную окружения `REACT_APP_API_URL` или используется fallback на `https://ur-ba.vercel.app`.
+
+Все API-функции экспортированы из [`api.ts`](ur-front/src/api.ts):
+
+```typescript
+// Примеры использования
+import { login, getCourses, getUserProfile } from './api';
+
+// Вход
+const response = await login('username', 'password');
+const { token } = await response.json();
+
+// Получение курсов
+const courses = await getCourses();
+
+// Получение профиля
+const profile = await getUserProfile(userId, token);
 ```
+
+## Запуск проекта
+
+### Установка зависимостей
+```bash
+cd ur-front
+npm install
+```
+
+### Запуск в режиме разработки
+```bash
+npm run dev
+```
+
+### Сборка для продакшена
+```bash
+npm run build
+```
+
+### Предпросмотр продакшен-сборки
+```bash
+npm run preview
+```
+
+## Конфигурация
+
+### Переменные окружения
+Создайте файл `.env` в корне проекта:
+```env
+REACT_APP_API_URL=http://localhost:8080
+```
+
+### Типы пользователей (роли)
+- `student` — студент (базовый доступ)
+- `teacher` — преподаватель (создание контента)
+- `admin` — администратор (полный доступ)
+
+### Уровни курсов
+- `beginner` — начальный
+- `intermediate` — средний
+- `advanced` — продвинутый
+- `speaking` — разговорный
+
+## Зависимости UI-компонентов
+
+Проект использует две UI-библиотеки для гибкости:
+- **Ant Design** — основные компоненты (формы, таблицы, карточки)
+- **Material UI** — дополнительные компоненты (иконки, date pickers)
+
+## Лицензия
+
+MIT

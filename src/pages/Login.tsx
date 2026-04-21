@@ -44,7 +44,7 @@ export const Login: React.FC = () => {
       } else {
         message.error(data.error || t('login.genericError'));
       }
-    } catch (e) {
+    } catch {
       message.error(t('login.networkError'));
     } finally {
       setLoading(false);
